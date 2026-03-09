@@ -1,4 +1,5 @@
-import type { RoundConfig, LetterData, Point } from "./types";
+import type { RoundConfig, Point } from "./types";
+import { showVictoryBanner, spawnConfetti } from "../../shared/victory";
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -150,49 +151,10 @@ export class Renderer {
   }
 
   showVictory() {
-    // Hide game area
     const gameArea = document.getElementById("game-area")!;
     gameArea.style.display = "none";
     this.roundIndicator.style.display = "none";
-
-    // Show banner
-    this.feedbackEl.className = "feedback victory";
-    this.feedbackEl.innerHTML =
-      `<div class="victory-banner">` +
-      `<div class="victory-star">&#11088;</div>` +
-      `<div class="victory-text">&#1499;&#1500; &#1492;&#1499;&#1489;&#1493;&#1491;!</div>` +
-      `<div class="victory-sub">&#1505;&#1497;&#1497;&#1502;&#1514;&#1501; &#1488;&#1514; &#1499;&#1500; &#1492;&#1505;&#1497;&#1489;&#1493;&#1489;&#1497;&#1501;!</div>` +
-      `</div>`;
-
-    // Confetti
-    this.spawnConfetti();
-  }
-
-  private spawnConfetti() {
-    const container = document.createElement("div");
-    container.className = "confetti-container";
-    document.body.appendChild(container);
-
-    const colors = ["#ff6b6b", "#ffd93d", "#6bcb77", "#4d96ff", "#ff6ec7", "#a66cff"];
-    const shapes = ["square", "circle"];
-
-    for (let i = 0; i < 80; i++) {
-      const piece = document.createElement("div");
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const shape = shapes[Math.floor(Math.random() * shapes.length)];
-      const left = Math.random() * 100;
-      const delay = Math.random() * 2;
-      const duration = 2 + Math.random() * 2;
-      const size = 8 + Math.random() * 8;
-
-      piece.className = `confetti-piece confetti-${shape}`;
-      piece.style.cssText =
-        `left:${left}%;` +
-        `background:${color};` +
-        `width:${size}px;height:${size}px;` +
-        `animation-delay:${delay}s;` +
-        `animation-duration:${duration}s;`;
-      container.appendChild(piece);
-    }
+    showVictoryBanner(this.feedbackEl, "\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3!", "\u05E1\u05D9\u05D9\u05DE\u05EA\u05DD \u05D0\u05EA \u05DB\u05DC \u05D4\u05E1\u05D9\u05D1\u05D5\u05D1\u05D9\u05DD!");
+    spawnConfetti();
   }
 }

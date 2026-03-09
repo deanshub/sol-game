@@ -1,0 +1,35 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import Base from "../../../layouts/Base.astro";
+import "../../../styles/shared-game.css";
+import "../../../styles/picture-puzzle.css";
+
+const puzzleDir = path.join(process.cwd(), "public/images/puzzle");
+const imageFiles = fs.existsSync(puzzleDir)
+  ? fs.readdirSync(puzzleDir).filter((f: string) => /\.(jpe?g|png|webp|gif|svg)$/i.test(f)).sort()
+  : [];
+const imageUrls = imageFiles.map((f: string) => `${import.meta.env.BASE_URL}images/puzzle/${f}`);
+---
+
+<Base title="פאזל תמונות">
+  <header class="game-header">
+    <a href={import.meta.env.BASE_URL} class="back-link">חזרה</a>
+    <h1 class="game-title">פאזל תמונות</h1>
+    <div class="puzzle-counter" id="puzzle-counter"></div>
+  </header>
+  <div class="puzzle-wrapper" id="puzzle-wrapper">
+    <div class="puzzle-board" id="puzzle-board"></div>
+    <div class="puzzle-tray" id="puzzle-tray"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div
+    id="puzzle-data"
+    data-images={JSON.stringify(imageUrls)}
+    data-base={import.meta.env.BASE_URL}
+    hidden
+  ></div>
+  <script>
+    import "../../../games/picture-puzzle/index";
+  </script>
+</Base>

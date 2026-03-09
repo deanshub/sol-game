@@ -1,23 +1,3 @@
-.game-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.back-link {
-  font-size: 1.1rem;
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.game-title {
-  font-size: 1.8rem;
-  color: var(--color-primary);
-}
-
 .round-indicator {
   font-size: 1.1rem;
   color: var(--color-text-light);
@@ -118,20 +98,6 @@
   border-color: var(--color-error);
 }
 
-@keyframes correctPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(0.97); }
-}
-
-@keyframes errorShake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-}
-
 .line-temp {
   stroke: var(--color-primary);
   stroke-width: 3;
@@ -143,93 +109,6 @@
   stroke: var(--color-success);
   stroke-width: 3;
   fill: none;
-}
-
-.feedback {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 1.6rem;
-  min-height: 48px;
-}
-
-.feedback.victory {
-  color: var(--color-success);
-  font-weight: bold;
-  font-size: 2rem;
-}
-
-.victory-banner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 48px 24px;
-  animation: bannerPop 0.5s ease;
-}
-
-.victory-star {
-  font-size: 5rem;
-  animation: starSpin 1s ease;
-}
-
-.victory-text {
-  font-size: 3rem;
-  color: var(--color-primary);
-}
-
-.victory-sub {
-  font-size: 1.4rem;
-  color: var(--color-text-light);
-}
-
-@keyframes bannerPop {
-  0% { transform: scale(0.3); opacity: 0; }
-  60% { transform: scale(1.1); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes starSpin {
-  0% { transform: rotate(0deg) scale(0); }
-  60% { transform: rotate(400deg) scale(1.2); }
-  100% { transform: rotate(360deg) scale(1); }
-}
-
-/* Confetti */
-
-.confetti-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 1000;
-}
-
-.confetti-piece {
-  position: absolute;
-  top: -20px;
-  animation: confettiFall linear forwards;
-}
-
-.confetti-square {
-  border-radius: 2px;
-}
-
-.confetti-circle {
-  border-radius: 50%;
-}
-
-@keyframes confettiFall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
 }
 
 @media (max-width: 500px) {

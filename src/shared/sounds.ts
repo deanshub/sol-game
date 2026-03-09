@@ -47,8 +47,11 @@ export function playVictory() {
   notes.forEach((freq, i) => {
     playTone(freq, 0.2, "sine", 0.25, i * 0.12);
   });
-  // Add a shimmery layer
   notes.forEach((freq, i) => {
     playTone(freq * 1.5, 0.15, "triangle", 0.1, i * 0.12 + 0.05);
   });
+}
+
+export function playSnap() {
+  playTone(880, 0.08, "sine", 0.2, 0);
 }

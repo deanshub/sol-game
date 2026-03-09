@@ -1,7 +1,7 @@
 import { Game } from "./game";
 import { Renderer } from "./renderer";
 import { buildRounds } from "./data";
-import { playCorrect, playError, playRoundComplete, playVictory } from "./sounds";
+import { playCorrect, playError, playRoundComplete, playVictory } from "../../shared/sounds";
 
 const rounds = buildRounds();
 const game = new Game(rounds);
