@@ -17,6 +17,7 @@ const wrapperEl = document.getElementById("puzzle-wrapper")!;
 const levelIndicator = document.getElementById("level-indicator")!;
 
 let currentLevel = 0;
+const usedImages = new Set<string>();
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -28,7 +29,12 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function pickRandomImage(): string {
-  return images[Math.floor(Math.random() * images.length)];
+  const available = images.filter((img) => !usedImages.has(img));
+  if (available.length === 0) usedImages.clear();
+  const pool = available.length > 0 ? available : images;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  usedImages.add(pick);
+  return pick;
 }
 
 function startLevel() {
