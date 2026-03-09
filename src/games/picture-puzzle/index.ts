@@ -1,8 +1,7 @@
-import { playCorrect, playError, playVictory, playSnap } from "../../shared/sounds";
+import { playCorrect, playError, playVictory, playSnap, playRoundComplete } from "../../shared/sounds";
 import { showVictoryBanner, spawnConfetti } from "../../shared/victory";
 
-const GRID = 3;
-const TOTAL = GRID * GRID;
+const LEVELS = [3, 4, 5];
 
 const dataEl = document.getElementById("puzzle-data")!;
 const images: string[] = JSON.parse(dataEl.dataset.images!);
@@ -13,12 +12,11 @@ if (images.length === 0) {
   throw new Error("No puzzle images");
 }
 
-const imageUrl = images[Math.floor(Math.random() * images.length)];
-
 const feedbackEl = document.getElementById("feedback")!;
 const wrapperEl = document.getElementById("puzzle-wrapper")!;
+const levelIndicator = document.getElementById("level-indicator")!;
 
-const placed = new Set<number>();
+let currentLevel = 0;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -29,16 +27,23 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function applyBg(el: HTMLElement, index: number, totalSize: number) {
-  const pieceSize = totalSize / GRID;
-  const col = index % GRID;
-  const row = Math.floor(index / GRID);
-  el.style.backgroundImage = `url(${imageUrl})`;
-  el.style.backgroundSize = `${totalSize}px ${totalSize}px`;
-  el.style.backgroundPosition = `-${col * pieceSize}px -${row * pieceSize}px`;
+function pickRandomImage(): string {
+  return images[Math.floor(Math.random() * images.length)];
 }
 
-function preloadAndStart() {
+function startLevel() {
+  const grid = LEVELS[currentLevel];
+  const imageUrl = pickRandomImage();
+
+  feedbackEl.textContent = "";
+  feedbackEl.className = "feedback";
+  wrapperEl.style.display = "";
+  levelIndicator.textContent = `\u05E9\u05DC\u05D1 ${currentLevel + 1} \u05DE\u05EA\u05D5\u05DA ${LEVELS.length} (${grid}x${grid})`;
+
+  preloadAndShow(imageUrl, grid);
+}
+
+function preloadAndShow(imageUrl: string, grid: number) {
   const img = new Image();
   img.src = imageUrl;
   img.onload = () => {
@@ -57,7 +62,7 @@ function preloadAndStart() {
 
     setTimeout(() => {
       wrapperEl.innerHTML = "";
-      buildGame();
+      buildGame(imageUrl, grid);
     }, 2500);
   };
   img.onerror = () => {
@@ -65,29 +70,41 @@ function preloadAndStart() {
   };
 }
 
-function buildGame() {
+function applyBg(el: HTMLElement, index: number, grid: number, imageUrl: string, totalSize: number) {
+  const pieceSize = totalSize / grid;
+  const col = index % grid;
+  const row = Math.floor(index / grid);
+  el.style.backgroundImage = `url(${imageUrl})`;
+  el.style.backgroundSize = `${totalSize}px ${totalSize}px`;
+  el.style.backgroundPosition = `-${col * pieceSize}px -${row * pieceSize}px`;
+}
+
+function buildGame(imageUrl: string, grid: number) {
+  const total = grid * grid;
+  const placed = new Set<number>();
+
   const counter = document.createElement("div");
   counter.className = "puzzle-counter";
   wrapperEl.appendChild(counter);
 
   const board = document.createElement("div");
   board.className = "puzzle-board";
+  board.style.gridTemplateColumns = `repeat(${grid}, 1fr)`;
+  board.style.gridTemplateRows = `repeat(${grid}, 1fr)`;
   wrapperEl.appendChild(board);
 
   const tray = document.createElement("div");
   tray.className = "puzzle-tray";
   wrapperEl.appendChild(tray);
 
-  // Create slots
-  for (let i = 0; i < TOTAL; i++) {
+  for (let i = 0; i < total; i++) {
     const slot = document.createElement("div");
     slot.className = "puzzle-slot";
     slot.dataset.slot = String(i);
     board.appendChild(slot);
   }
 
-  // Create shuffled pieces in tray
-  const indices = shuffle(Array.from({ length: TOTAL }, (_, i) => i));
+  const indices = shuffle(Array.from({ length: total }, (_, i) => i));
   for (const idx of indices) {
     const piece = document.createElement("div");
     piece.className = "puzzle-piece";
@@ -95,17 +112,17 @@ function buildGame() {
     tray.appendChild(piece);
   }
 
-  counter.textContent = `0 / ${TOTAL}`;
+  counter.textContent = `0 / ${total}`;
 
-  // Wait a frame so layout is computed, then apply backgrounds using actual sizes
+  // Apply backgrounds after layout
   requestAnimationFrame(() => {
     const trayPiece = tray.querySelector<HTMLElement>(".puzzle-piece");
     if (!trayPiece) return;
     const pieceW = trayPiece.offsetWidth;
-    const trayBgTotal = pieceW * GRID;
+    const trayBgTotal = pieceW * grid;
 
     tray.querySelectorAll<HTMLElement>(".puzzle-piece").forEach((p) => {
-      applyBg(p, Number(p.dataset.index), trayBgTotal);
+      applyBg(p, Number(p.dataset.index), grid, imageUrl, trayBgTotal);
     });
   });
 
@@ -116,7 +133,7 @@ function buildGame() {
   let offsetX = 0;
   let offsetY = 0;
 
-  tray.addEventListener("pointerdown", (e) => {
+  function onPointerDown(e: PointerEvent) {
     const piece = (e.target as HTMLElement).closest<HTMLElement>(".puzzle-piece");
     if (!piece || piece.classList.contains("placed")) return;
 
@@ -140,9 +157,9 @@ function buildGame() {
 
     document.body.appendChild(dragClone);
     (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
-  });
+  }
 
-  document.addEventListener("pointermove", (e) => {
+  function onPointerMove(e: PointerEvent) {
     if (!dragClone) return;
     dragClone.style.left = (e.clientX - offsetX) + "px";
     dragClone.style.top = (e.clientY - offsetY) + "px";
@@ -153,9 +170,9 @@ function buildGame() {
     if (slot && !slot.classList.contains("filled")) {
       slot.classList.add("drag-over");
     }
-  });
+  }
 
-  document.addEventListener("pointerup", (e) => {
+  function onPointerUp(e: PointerEvent) {
     if (!dragClone || currentDragIndex === null || !dragPiece) return;
 
     dragClone.remove();
@@ -175,23 +192,34 @@ function buildGame() {
         const placedPiece = document.createElement("div");
         placedPiece.className = "puzzle-piece placed";
         placedPiece.dataset.index = String(currentDragIndex);
-        // Use slot's actual size so pieces tile to the full board
         const slotW = slot.offsetWidth;
-        const slotH = slot.offsetHeight;
-        applyBg(placedPiece, currentDragIndex, slotW * GRID);
+        applyBg(placedPiece, currentDragIndex, grid, imageUrl, slotW * grid);
 
         slot.classList.add("filled");
         slot.appendChild(placedPiece);
         dragPiece.remove();
 
-        counter.textContent = `${placed.size} / ${TOTAL}`;
+        counter.textContent = `${placed.size} / ${total}`;
 
-        if (placed.size === TOTAL) {
-          playVictory();
-          wrapperEl.style.display = "none";
-          showVictoryBanner(feedbackEl, "\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3!", "\u05D4\u05E8\u05DB\u05D1\u05EA\u05DD \u05D0\u05EA \u05D4\u05E4\u05D0\u05D6\u05DC!");
-          spawnConfetti();
-          setTimeout(() => { window.location.href = baseUrl; }, 5000);
+        if (placed.size === total) {
+          cleanup();
+          if (currentLevel < LEVELS.length - 1) {
+            // Next level
+            playRoundComplete();
+            feedbackEl.textContent = "\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3! \u05E2\u05D5\u05D1\u05E8\u05D9\u05DD \u05DC\u05E9\u05DC\u05D1 \u05D4\u05D1\u05D0...";
+            setTimeout(() => {
+              currentLevel++;
+              startLevel();
+            }, 1500);
+          } else {
+            // Game complete
+            playVictory();
+            wrapperEl.style.display = "none";
+            levelIndicator.style.display = "none";
+            showVictoryBanner(feedbackEl, "\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3!", "\u05E1\u05D9\u05D9\u05DE\u05EA\u05DD \u05D0\u05EA \u05DB\u05DC \u05D4\u05E4\u05D0\u05D6\u05DC\u05D9\u05DD!");
+            spawnConfetti();
+            setTimeout(() => { window.location.href = baseUrl; }, 5000);
+          }
         } else {
           playCorrect();
         }
@@ -209,7 +237,17 @@ function buildGame() {
 
     dragPiece = null;
     currentDragIndex = null;
-  });
+  }
+
+  tray.addEventListener("pointerdown", onPointerDown);
+  document.addEventListener("pointermove", onPointerMove);
+  document.addEventListener("pointerup", onPointerUp);
+
+  function cleanup() {
+    tray.removeEventListener("pointerdown", onPointerDown);
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("pointerup", onPointerUp);
+  }
 }
 
-preloadAndStart();
+startLevel();
