@@ -1,0 +1,22 @@
+---
+import Base from "../../../layouts/Base.astro";
+import "../../../styles/hebrew-match.css";
+---
+
+<Base title="התאמת אותיות">
+  <header class="game-header">
+    <a href={import.meta.env.BASE_URL} class="back-link">חזרה</a>
+    <h1 class="game-title">התאמת אותיות</h1>
+    <div class="round-indicator" id="round-indicator">סיבוב 1 מתוך 6</div>
+  </header>
+  <div class="game-area" id="game-area">
+    <div class="letters-column" id="letters-column"></div>
+    <svg class="lines-overlay" id="lines-overlay"></svg>
+    <div class="pictures-column" id="pictures-column"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div id="base-url" data-base={import.meta.env.BASE_URL} hidden></div>
+  <script>
+    import "../../../games/hebrew-match/index";
+  </script>
+</Base>
