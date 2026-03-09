@@ -75,3 +75,22 @@ body {
   color: var(--color-text-light);
   font-size: 1rem;
 }
+
+.countdown-card {
+  cursor: default;
+  opacity: 0.75;
+  background: linear-gradient(135deg, var(--color-card), var(--color-primary-light));
+}
+
+.countdown-card:hover {
+  transform: none;
+  box-shadow: var(--shadow);
+}
+
+.countdown-timer {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
