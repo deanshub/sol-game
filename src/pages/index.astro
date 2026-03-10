@@ -21,35 +21,25 @@ const base = import.meta.env.BASE_URL;
       <h2>חשבון</h2>
       <p>חיבור וחיסור</p>
     </a>
+    <a href={`${base}games/comics-quiz/`} class="game-card" data-game="comics-quiz">
+      <div class="game-card-icon">💬</div>
+      <h2>קומיקס וחידות</h2>
+      <p>קראו את הסיפור וענו</p>
+    </a>
   </div>
-  <script define:vars={{ base }}>
-    window.__BASE_URL__ = base;
-  </script>
   <script>
     import { isCompleted } from "../shared/progress";
-
-    const base = (window as any).__BASE_URL__ as string;
-
-    // Timed games in order — each unlocks at 18:00 Israel time on consecutive days
-    const TIMED_GAMES = [
-      { id: "comics-quiz", href: `${base}games/comics-quiz/`, icon: "💬", title: "קומיקס וחידות", subtitle: "קראו את הסיפור וענו" },
-    ];
 
     // Mark completed games
     document.querySelectorAll<HTMLElement>(".game-card[data-game]").forEach((card) => {
       if (isCompleted(card.dataset.game!)) card.classList.add("completed");
     });
 
+    // "Coming soon" placeholder with countdown to 18:00
     const grid = document.getElementById("game-grid")!;
-    const isBeta = new URLSearchParams(window.location.search).get("beta") === "true";
 
     function getIsraelNow(): Date {
       return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
-    }
-
-    function isUnlockedNow(): boolean {
-      if (isBeta) return true;
-      return getIsraelNow().getHours() >= 18;
     }
 
     function getMsUntilNext18(): number {
@@ -64,78 +54,6 @@ const base = import.meta.env.BASE_URL;
       return String(n).padStart(2, "0");
     }
 
-    // Find the first timed game that hasn't been completed yet
-    let currentTimedIndex = TIMED_GAMES.findIndex((g) => !isCompleted(g.id));
-    if (currentTimedIndex === -1) currentTimedIndex = TIMED_GAMES.length; // all done
-
-    // Add all completed timed games as regular cards
-    for (let i = 0; i < currentTimedIndex; i++) {
-      const g = TIMED_GAMES[i];
-      const link = document.createElement("a");
-      link.href = g.href;
-      link.className = "game-card completed";
-      link.dataset.game = g.id;
-      link.innerHTML = `<div class="game-card-icon">${g.icon}</div><h2>${g.title}</h2><p>${g.subtitle}</p>`;
-      grid.appendChild(link);
-    }
-
-    // If there's a next game to unlock, show it
-    if (currentTimedIndex < TIMED_GAMES.length) {
-      const current = TIMED_GAMES[currentTimedIndex];
-
-      if (isUnlockedNow()) {
-        // Show current as unlocked link
-        const link = document.createElement("a");
-        link.href = current.href;
-        link.className = "game-card";
-        link.dataset.game = current.id;
-        link.innerHTML = `<div class="game-card-icon">${current.icon}</div><h2>${current.title}</h2><p>${current.subtitle}</p>`;
-        grid.appendChild(link);
-      } else {
-        // Show current as locked countdown
-        const card = document.createElement("div");
-        card.className = "game-card countdown-card";
-        card.dataset.game = current.id;
-        card.innerHTML =
-          `<div class="game-card-icon" id="locked-icon">🔒</div>` +
-          `<h2>${current.title}</h2>` +
-          `<p>${current.subtitle}</p>` +
-          `<div class="countdown-timer" id="countdown-timer"></div>`;
-        grid.appendChild(card);
-
-        const timerEl = card.querySelector<HTMLElement>("#countdown-timer")!;
-        const iconEl = card.querySelector<HTMLElement>("#locked-icon")!;
-
-        function tick() {
-          if (isUnlockedNow()) {
-            clearInterval(iv);
-            card.classList.remove("countdown-card");
-            iconEl.textContent = current.icon;
-            timerEl.style.display = "none";
-
-            const link = document.createElement("a");
-            link.href = current.href;
-            link.className = card.className;
-            link.dataset.game = current.id;
-            link.innerHTML = card.innerHTML;
-            card.replaceWith(link);
-            return;
-          }
-
-          const diff = Math.max(0, getMsUntilNext18());
-          const h = Math.floor(diff / 3600000);
-          const m = Math.floor((diff % 3600000) / 60000);
-          const s = Math.floor((diff % 60000) / 1000);
-          timerEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-        }
-
-        let iv: ReturnType<typeof setInterval>;
-        tick();
-        iv = setInterval(tick, 1000);
-      }
-    }
-
-    // Always show a "coming soon" placeholder with countdown to 18:00
     {
       const card = document.createElement("div");
       card.className = "game-card countdown-card";
@@ -147,15 +65,15 @@ const base = import.meta.env.BASE_URL;
       grid.appendChild(card);
 
       const timerEl = card.querySelector<HTMLElement>("#coming-soon-timer")!;
-      function tickComingSoon() {
+      function tick() {
         const diff = Math.max(0, getMsUntilNext18());
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
         timerEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
-      tickComingSoon();
-      setInterval(tickComingSoon, 1000);
+      tick();
+      setInterval(tick, 1000);
     }
   </script>
 </Base>
