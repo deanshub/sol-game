@@ -33,8 +33,6 @@ const base = import.meta.env.BASE_URL;
     // Timed games in order — each unlocks at 18:00 Israel time on consecutive days
     const TIMED_GAMES = [
       { id: "comics-quiz", href: `${base}games/comics-quiz/`, icon: "💬", title: "קומיקס וחידות", subtitle: "קראו את הסיפור וענו" },
-      { id: "english-quiz", href: `${base}games/english-quiz/`, icon: "🔤", title: "אנגלית", subtitle: "תרגלו מילים באנגלית", lockedSubtitle: "בקרוב..." },
-      { id: "coming-soon", href: "#", icon: "🎮", title: "עוד משחק", subtitle: "בקרוב...", lockedSubtitle: "בקרוב..." },
     ];
 
     // Mark completed games
@@ -84,7 +82,6 @@ const base = import.meta.env.BASE_URL;
     // If there's a next game to unlock, show it
     if (currentTimedIndex < TIMED_GAMES.length) {
       const current = TIMED_GAMES[currentTimedIndex];
-      const next = currentTimedIndex + 1 < TIMED_GAMES.length ? TIMED_GAMES[currentTimedIndex + 1] : null;
 
       if (isUnlockedNow()) {
         // Show current as unlocked link
@@ -94,70 +91,71 @@ const base = import.meta.env.BASE_URL;
         link.dataset.game = current.id;
         link.innerHTML = `<div class="game-card-icon">${current.icon}</div><h2>${current.title}</h2><p>${current.subtitle}</p>`;
         grid.appendChild(link);
-
-        // Show next as locked if exists
-        if (next) {
-          appendLockedCard(next);
-        }
       } else {
         // Show current as locked countdown
-        appendLockedCard(current);
+        const card = document.createElement("div");
+        card.className = "game-card countdown-card";
+        card.dataset.game = current.id;
+        card.innerHTML =
+          `<div class="game-card-icon" id="locked-icon">🔒</div>` +
+          `<h2>${current.title}</h2>` +
+          `<p>${current.subtitle}</p>` +
+          `<div class="countdown-timer" id="countdown-timer"></div>`;
+        grid.appendChild(card);
+
+        const timerEl = card.querySelector<HTMLElement>("#countdown-timer")!;
+        const iconEl = card.querySelector<HTMLElement>("#locked-icon")!;
+
+        function tick() {
+          if (isUnlockedNow()) {
+            clearInterval(iv);
+            card.classList.remove("countdown-card");
+            iconEl.textContent = current.icon;
+            timerEl.style.display = "none";
+
+            const link = document.createElement("a");
+            link.href = current.href;
+            link.className = card.className;
+            link.dataset.game = current.id;
+            link.innerHTML = card.innerHTML;
+            card.replaceWith(link);
+            return;
+          }
+
+          const diff = Math.max(0, getMsUntilNext18());
+          const h = Math.floor(diff / 3600000);
+          const m = Math.floor((diff % 3600000) / 60000);
+          const s = Math.floor((diff % 60000) / 1000);
+          timerEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+        }
+
+        let iv: ReturnType<typeof setInterval>;
+        tick();
+        iv = setInterval(tick, 1000);
       }
     }
 
-    function appendLockedCard(game: typeof TIMED_GAMES[0]) {
+    // Always show a "coming soon" placeholder with countdown to 18:00
+    {
       const card = document.createElement("div");
       card.className = "game-card countdown-card";
-      card.id = "countdown-card";
-      card.dataset.game = game.id;
-      card.dataset.href = game.href;
       card.innerHTML =
-        `<div class="game-card-icon" id="locked-icon">🔒</div>` +
-        `<h2>${game.title}</h2>` +
-        `<p>${game.lockedSubtitle || game.subtitle}</p>` +
-        `<div class="countdown-timer" id="countdown-timer"></div>`;
+        `<div class="game-card-icon">🎮</div>` +
+        `<h2>עוד משחק</h2>` +
+        `<p>בקרוב...</p>` +
+        `<div class="countdown-timer" id="coming-soon-timer"></div>`;
       grid.appendChild(card);
-      startCountdown(card, game);
-    }
 
-    function startCountdown(card: HTMLElement, game: typeof TIMED_GAMES[0]) {
-      const timerEl = card.querySelector<HTMLElement>("#countdown-timer")!;
-      const iconEl = card.querySelector<HTMLElement>("#locked-icon")!;
-
-      function tick() {
-        if (isUnlockedNow() && game.href !== "#") {
-          // Unlock: convert to link
-          card.classList.remove("countdown-card");
-          iconEl.textContent = game.icon;
-          timerEl.style.display = "none";
-
-          const link = document.createElement("a");
-          link.href = game.href;
-          link.className = card.className;
-          link.dataset.game = game.id;
-          link.innerHTML = card.innerHTML;
-          card.replaceWith(link);
-
-          clearInterval(iv);
-
-          // Show next locked card if exists
-          const nextIdx = TIMED_GAMES.indexOf(game) + 1;
-          if (nextIdx < TIMED_GAMES.length) {
-            appendLockedCard(TIMED_GAMES[nextIdx]);
-          }
-          return;
-        }
-
+      const timerEl = card.querySelector<HTMLElement>("#coming-soon-timer")!;
+      function tickComingSoon() {
         const diff = Math.max(0, getMsUntilNext18());
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
         timerEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
-
-      let iv: ReturnType<typeof setInterval>;
-      tick();
-      iv = setInterval(tick, 1000);
+      tickComingSoon();
+      setInterval(tickComingSoon, 1000);
     }
   </script>
 </Base>
