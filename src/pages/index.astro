@@ -155,8 +155,9 @@ const base = import.meta.env.BASE_URL;
         timerEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
 
+      let iv: ReturnType<typeof setInterval>;
       tick();
-      const iv = setInterval(tick, 1000);
+      iv = setInterval(tick, 1000);
     }
   </script>
 </Base>
