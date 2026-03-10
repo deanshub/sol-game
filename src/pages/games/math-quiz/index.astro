@@ -1,0 +1,23 @@
+---
+import Base from "../../../layouts/Base.astro";
+import "../../../styles/shared-game.css";
+import "../../../styles/math-quiz.css";
+---
+
+<Base title="חשבון">
+  <header class="game-header">
+    <a href={import.meta.env.BASE_URL} class="back-link">חזרה</a>
+    <h1 class="game-title">חשבון</h1>
+    <div class="level-indicator" id="level-indicator"></div>
+  </header>
+  <div class="math-game-area" id="game-area">
+    <div class="progress-text" id="progress"></div>
+    <div class="question-text" id="question"></div>
+    <div class="options-grid" id="options"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div id="game-data" data-base={import.meta.env.BASE_URL} hidden></div>
+  <script>
+    import "../../../games/math-quiz/index";
+  </script>
+</Base>

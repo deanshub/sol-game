@@ -2,6 +2,7 @@ import { Game } from "./game";
 import { Renderer } from "./renderer";
 import { buildRounds } from "./data";
 import { playCorrect, playError, playRoundComplete, playVictory } from "../../shared/sounds";
+import { markCompleted } from "../../shared/progress";
 
 const rounds = buildRounds();
 const game = new Game(rounds);
@@ -65,6 +66,7 @@ document.addEventListener("pointerup", (e) => {
       renderer.flashCorrect(word);
 
       if (game.isGameComplete()) {
+        markCompleted("hebrew-match");
         playVictory();
         renderer.showVictory();
         const base = document.getElementById("base-url")?.dataset.base || "/";

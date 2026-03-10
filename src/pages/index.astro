@@ -5,15 +5,20 @@ import Base from "../layouts/Base.astro";
 <Base title="משחקי כיתה א1 של סול">
   <h1 class="page-title">משחקי כיתה א1 של סול</h1>
   <div class="game-grid">
-    <a href={`${import.meta.env.BASE_URL}games/hebrew-match/`} class="game-card">
+    <a href={`${import.meta.env.BASE_URL}games/hebrew-match/`} class="game-card" data-game="hebrew-match">
       <div class="game-card-icon">אבג</div>
       <h2>התאמת אותיות</h2>
       <p>התאימו אותיות לתמונות</p>
     </a>
-    <a href={`${import.meta.env.BASE_URL}games/picture-puzzle/`} class="game-card">
+    <a href={`${import.meta.env.BASE_URL}games/picture-puzzle/`} class="game-card" data-game="picture-puzzle">
       <div class="game-card-icon">🧩</div>
       <h2>פאזל תמונות</h2>
       <p>הרכיבו את התמונה</p>
+    </a>
+    <a href={`${import.meta.env.BASE_URL}games/math-quiz/`} class="game-card" data-game="math-quiz">
+      <div class="game-card-icon">➕</div>
+      <h2>חשבון</h2>
+      <p>חיבור וחיסור</p>
     </a>
     <div class="game-card countdown-card" id="countdown-card">
       <div class="game-card-icon">🔒</div>
@@ -22,14 +27,23 @@ import Base from "../layouts/Base.astro";
     </div>
   </div>
   <script>
+    import { isCompleted } from "../shared/progress";
+
+    document.querySelectorAll<HTMLElement>(".game-card[data-game]").forEach((card) => {
+      const gameId = card.dataset.game!;
+      if (isCompleted(gameId)) {
+        card.classList.add("completed");
+      }
+    });
+
     const timerEl = document.getElementById("countdown-timer")!;
 
     function getNextUnlock(): Date {
       const now = new Date();
       const israel = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
       const target = new Date(israel);
+      target.setDate(target.getDate() + 1);
       target.setHours(18, 0, 0, 0);
-      if (israel >= target) target.setDate(target.getDate() + 1);
       // Convert back: diff between israel-interpreted time and target
       const diff = target.getTime() - israel.getTime();
       return new Date(now.getTime() + diff);

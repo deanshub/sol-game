@@ -1,5 +1,6 @@
 import { playCorrect, playError, playVictory, playSnap, playRoundComplete } from "../../shared/sounds";
 import { showVictoryBanner, spawnConfetti } from "../../shared/victory";
+import { markCompleted } from "../../shared/progress";
 
 const LEVELS = [3, 4, 5];
 
@@ -219,6 +220,7 @@ function buildGame(imageUrl: string, grid: number) {
             }, 1500);
           } else {
             // Game complete
+            markCompleted("picture-puzzle");
             playVictory();
             wrapperEl.style.display = "none";
             levelIndicator.style.display = "none";

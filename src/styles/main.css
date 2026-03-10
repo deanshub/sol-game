@@ -76,6 +76,19 @@ body {
   font-size: 1rem;
 }
 
+.game-card.completed {
+  border: 3px solid var(--color-success);
+  position: relative;
+}
+
+.game-card.completed::after {
+  content: "\2705";
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 1.5rem;
+}
+
 .countdown-card {
   cursor: default;
   opacity: 0.75;

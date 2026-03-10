@@ -1,0 +1,83 @@
+.math-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 24px 0;
+}
+
+.question-text {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-text {
+  font-size: 1rem;
+  color: var(--color-text-light);
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: min(360px, 85vw);
+  direction: ltr;
+}
+
+.option-btn {
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 20px;
+  border: 3px solid transparent;
+  border-radius: var(--radius);
+  background: var(--color-card);
+  box-shadow: var(--shadow);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+  font-variant-numeric: tabular-nums;
+}
+
+.option-btn:hover {
+  border-color: var(--color-primary-light);
+  transform: scale(1.04);
+}
+
+.option-btn:active {
+  transform: scale(0.97);
+}
+
+.option-btn.correct {
+  border-color: var(--color-success);
+  background: #f0fdf4;
+  animation: correctPulse 0.4s ease;
+}
+
+.option-btn.wrong {
+  border-color: var(--color-error);
+  background: #fef2f2;
+  animation: errorShake 0.4s ease;
+}
+
+.level-indicator {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+}
+
+@media (max-width: 500px) {
+  .question-text {
+    font-size: 2.5rem;
+  }
+
+  .option-btn {
+    font-size: 1.5rem;
+    padding: 16px;
+  }
+
+  .game-title {
+    font-size: 1.3rem;
+  }
+}
