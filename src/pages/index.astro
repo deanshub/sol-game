@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+const comicsUrl = `${import.meta.env.BASE_URL}games/comics-quiz/`;
 ---
 
 <Base title="משחקי כיתה א1 של סול">
@@ -20,9 +21,10 @@ import Base from "../layouts/Base.astro";
       <h2>חשבון</h2>
       <p>חיבור וחיסור</p>
     </a>
-    <div class="game-card countdown-card" id="countdown-card">
-      <div class="game-card-icon">🔒</div>
-      <h2>משחק חדש</h2>
+    <div class="game-card countdown-card" id="timed-card" data-href={comicsUrl} data-game="comics-quiz">
+      <div class="game-card-icon" id="timed-icon">🔒</div>
+      <h2 id="timed-title">קומיקס וחידות</h2>
+      <p id="timed-subtitle">קראו את הסיפור וענו</p>
       <div class="countdown-timer" id="countdown-timer"></div>
     </div>
   </div>
@@ -36,36 +38,72 @@ import Base from "../layouts/Base.astro";
       }
     });
 
+    const card = document.getElementById("timed-card")! as HTMLElement;
     const timerEl = document.getElementById("countdown-timer")!;
+    const iconEl = document.getElementById("timed-icon")!;
 
-    function getNextUnlock(): Date {
+    function getIsraelNow(): Date {
+      return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+    }
+
+    function getMsUntilNext18(): number {
       const now = new Date();
-      const israel = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+      const israel = getIsraelNow();
       const target = new Date(israel);
-      target.setDate(target.getDate() + 1);
       target.setHours(18, 0, 0, 0);
-      // Convert back: diff between israel-interpreted time and target
+      if (israel >= target) target.setDate(target.getDate() + 1);
       const diff = target.getTime() - israel.getTime();
-      return new Date(now.getTime() + diff);
+      return diff;
+    }
+
+    const isBeta = new URLSearchParams(window.location.search).get("beta") === "true";
+
+    function isUnlocked(): boolean {
+      if (isBeta) return true;
+      const israel = getIsraelNow();
+      return israel.getHours() >= 18;
     }
 
     function pad(n: number): string {
       return String(n).padStart(2, "0");
     }
 
-    function tick() {
-      const now = Date.now();
-      const target = getNextUnlock().getTime();
-      const diff = Math.max(0, target - now);
+    function unlock() {
+      card.classList.remove("countdown-card");
+      iconEl.textContent = "💬";
+      timerEl.style.display = "none";
 
+      // Convert to a link
+      const link = document.createElement("a");
+      link.href = card.dataset.href!;
+      link.className = card.className;
+      link.dataset.game = card.dataset.game;
+      link.innerHTML = card.innerHTML;
+      card.replaceWith(link);
+
+      // Check completed state
+      if (isCompleted("comics-quiz")) {
+        link.classList.add("completed");
+      }
+    }
+
+    function tick() {
+      if (isUnlocked()) {
+        unlock();
+        return;
+      }
+
+      const diff = Math.max(0, getMsUntilNext18());
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
-
       timerEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
     }
 
     tick();
-    setInterval(tick, 1000);
+    const interval = setInterval(() => {
+      tick();
+      if (isUnlocked()) clearInterval(interval);
+    }, 1000);
   </script>
 </Base>

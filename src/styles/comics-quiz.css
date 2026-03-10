@@ -1,0 +1,115 @@
+.comics-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+.comic-title {
+  font-size: 1.8rem;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.comic-image {
+  width: min(560px, 92vw);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  animation: comicAppear 0.5s ease;
+}
+
+@keyframes comicAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.comic-question-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(560px, 92vw);
+}
+
+.comic-question-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-text);
+  text-align: center;
+  padding: 16px;
+  background: var(--color-primary-light);
+  border-radius: var(--radius);
+  width: 100%;
+}
+
+.comic-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.comic-option-btn {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 16px 12px;
+  border: 3px solid transparent;
+  border-radius: var(--radius);
+  background: var(--color-card);
+  box-shadow: var(--shadow);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+}
+
+.comic-option-btn:hover {
+  border-color: var(--color-primary-light);
+  transform: scale(1.03);
+}
+
+.comic-option-btn:active {
+  transform: scale(0.97);
+}
+
+.comic-option-btn.correct {
+  border-color: var(--color-success);
+  background: #f0fdf4;
+  animation: correctPulse 0.4s ease;
+}
+
+.comic-option-btn.wrong {
+  border-color: var(--color-error);
+  background: #fef2f2;
+  animation: errorShake 0.4s ease;
+}
+
+.level-indicator {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+}
+
+@media (max-width: 500px) {
+  .comic-title {
+    font-size: 1.4rem;
+  }
+
+  .comic-question-text {
+    font-size: 1.2rem;
+  }
+
+  .comic-option-btn {
+    font-size: 1rem;
+    padding: 12px 8px;
+  }
+
+  .game-title {
+    font-size: 1.3rem;
+  }
+}
