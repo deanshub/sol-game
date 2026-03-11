@@ -1,0 +1,26 @@
+---
+import Base from "../../../layouts/Base.astro";
+import "../../../styles/shared-game.css";
+import "../../../styles/english-quiz.css";
+---
+
+<Base title="English Quiz">
+  <header class="game-header">
+    <a href={import.meta.env.BASE_URL} class="back-link">חזרה</a>
+    <h1 class="game-title">English Quiz</h1>
+    <div class="level-indicator" id="level-indicator"></div>
+  </header>
+  <div class="english-game-area" id="game-area">
+    <div class="progress-text" id="progress"></div>
+    <button class="sound-btn" id="sound-btn" type="button" aria-label="Play word">
+      <span class="sound-icon">🔊</span>
+      <span class="sound-label" id="sound-label">הקשיבו למילה</span>
+    </button>
+    <div class="image-options" id="options"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div id="game-data" data-base={import.meta.env.BASE_URL} hidden></div>
+  <script>
+    import "../../../games/english-quiz/index";
+  </script>
+</Base>
