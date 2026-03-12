@@ -1,0 +1,132 @@
+.memory-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+}
+
+.card-grid {
+  display: grid;
+  gap: 10px;
+  width: min(480px, 92vw);
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  perspective: 600px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease;
+  transform-style: preserve-3d;
+}
+
+.memory-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  box-shadow: var(--shadow);
+  border: 3px solid transparent;
+}
+
+.card-front {
+  background: var(--color-primary);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.card-back-face {
+  background: var(--color-card);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  font-size: 2.5rem;
+}
+
+.card-back {
+  font-size: 2rem;
+  opacity: 0.7;
+}
+
+.memory-card:hover .card-inner {
+  transform: scale(1.05);
+}
+
+.memory-card.flipped:hover .card-inner {
+  transform: rotateY(180deg) scale(1.05);
+}
+
+.memory-card:active .card-inner {
+  transform: scale(0.95);
+}
+
+.memory-card.flipped:active .card-inner {
+  transform: rotateY(180deg) scale(0.95);
+}
+
+.memory-card.matched .card-back-face {
+  background: #f0fdf4;
+  border-color: var(--color-success);
+}
+
+.memory-card.matched {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.memory-card.matched:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+@media (max-width: 500px) {
+  .card-grid {
+    gap: 5px;
+  }
+
+  .card-front {
+    border-radius: 10px;
+    font-size: 1.5rem;
+    border-width: 2px;
+  }
+
+  .card-back-face {
+    border-radius: 10px;
+    border-width: 2px;
+  }
+
+  .card-face {
+    font-size: 2rem;
+  }
+
+  .card-back {
+    font-size: 1.5rem;
+  }
+}

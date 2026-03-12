@@ -1,0 +1,25 @@
+---
+import Base from "../../../layouts/Base.astro";
+import "../../../styles/shared-game.css";
+import "../../../styles/memory-match.css";
+---
+
+<Base title="זיכרון">
+  <header class="game-header">
+    <a href={import.meta.env.BASE_URL} class="back-link">חזרה</a>
+    <h1 class="game-title">זיכרון</h1>
+    <div class="level-indicator" id="level-indicator"></div>
+  </header>
+  <div class="memory-game-area" id="game-area">
+    <div class="stats-bar">
+      <span id="moves-count">מהלכים: 0</span>
+      <span id="pairs-count">זוגות: 0 / 0</span>
+    </div>
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div id="game-data" data-base={import.meta.env.BASE_URL} hidden></div>
+  <script>
+    import "../../../games/memory-match/index";
+  </script>
+</Base>
