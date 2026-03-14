@@ -41,6 +41,11 @@ const base = import.meta.env.BASE_URL;
       <h2>מבוך</h2>
       <p>מצאו את הדרך ואספו אותיות</p>
     </a>
+    <a href={`${base}games/sentence-complete/`} class="game-card" data-game="sentence-complete">
+      <div class="game-card-icon">✏️</div>
+      <h2>השלם את המשפט</h2>
+      <p>בחרו את המילה הנכונה</p>
+    </a>
   </div>
   <script>
     import { isCompleted } from "../shared/progress";

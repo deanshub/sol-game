@@ -1,0 +1,99 @@
+.sentence-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+}
+
+.sentence-text {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--color-text);
+  text-align: center;
+  line-height: 1.8;
+  max-width: min(500px, 90vw);
+  padding: 24px;
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.blank {
+  display: inline-block;
+  min-width: 80px;
+  padding: 2px 12px;
+  margin: 0 4px;
+  border-bottom: 3px dashed var(--color-primary);
+  color: var(--color-primary);
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.blank.filled {
+  border-bottom-style: solid;
+  border-color: var(--color-success);
+  color: var(--color-success);
+  background: #f0fdf4;
+  border-radius: 4px;
+}
+
+.sentence-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  width: min(500px, 90vw);
+}
+
+.sentence-options .option-btn {
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 14px 28px;
+  border: 3px solid transparent;
+  border-radius: var(--radius);
+  background: var(--color-card);
+  box-shadow: var(--shadow);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+  min-width: 100px;
+}
+
+.sentence-options .option-btn:hover {
+  border-color: var(--color-primary-light);
+  transform: scale(1.04);
+}
+
+.sentence-options .option-btn:active {
+  transform: scale(0.97);
+}
+
+.sentence-options .option-btn.correct {
+  border-color: var(--color-success);
+  background: #f0fdf4;
+  animation: correctPulse 0.4s ease;
+}
+
+.sentence-options .option-btn.wrong {
+  border-color: var(--color-error);
+  background: #fef2f2;
+  animation: errorShake 0.4s ease;
+}
+
+@media (max-width: 500px) {
+  .sentence-text {
+    font-size: 1.4rem;
+    padding: 16px;
+  }
+
+  .sentence-options .option-btn {
+    font-size: 1.2rem;
+    padding: 12px 20px;
+    min-width: 80px;
+  }
+
+  .blank {
+    min-width: 60px;
+  }
+}
